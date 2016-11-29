@@ -1,0 +1,37 @@
+/Build/
+.svn/
+/debug*/
+/opt*/
+/build/
+/bin/
+/*.xcodeproj/
+docs/html/
+docs/doxygen_objdb_*.tmp
+docs/perlmod/
+.*.orig
+
+# VIM files
+.*.sw?
+*.pyc
+
+#atom code editor
+.atom-build.json
+.clang_complete
+compile_commands.json
+
+# Other files
+.DS_Store
+GPATH
+GRTAGS
+GSYMS
+GTAGS
+tags
+workbench.tag
+
+# eclipse files
+.cproject
+.project
+.pydevproject
+
+.o
+.a
