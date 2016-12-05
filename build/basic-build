@@ -1,2 +1,2 @@
 #!/bin/sh
-~/impersonal/code/llvm-reflexpr/install/bin/clang++ ../tests/test_unit.cpp -o test_unit -isystem../external/ ../external/gtest/gtest.cc --std=c++1z ../src/geo/vector_test_unit.cpp
+/usr/local/Cellar/gcc/HEAD-/bin/g++-7 -fconcepts ../tests/test_unit.cpp -o test_unit -isystem../external/ ../external/gtest/gtest.cc --std=c++1z ../src/geo/vector_test_unit.cpp
