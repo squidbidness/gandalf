@@ -54,6 +54,11 @@ namespace geo {
 
 	};
 
+	template< typename ...T >
+	auto makeVector( T &&...t ) {
+		return Vector< std::common_type_t<T...>, sizeof...(T) >{
+				std::forward<T>( t )... };
+	}
 
 	template< size_t N > using VectorF = Vector<float, N>;
 	template< size_t N > using VectorD = Vector<double, N>;

@@ -6,8 +6,7 @@ namespace geo {
 
 	template< typename ...S >
 	auto testComponents( S &&...s ) -> void {
-		Vector<std::common_type_t<S...>, sizeof...(S)> v
-				= { std::forward<S>( s )... };
+		auto v = makeVector( std::forward<S>( s )... );
 
 		if constexpr ( v.size() > 0 ) {
 			EXPECT_EQ( v[0], v.x() )
