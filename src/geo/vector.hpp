@@ -42,16 +42,6 @@ namespace geo {
 			return w();
 		}
 
-		friend auto dot( Vector const &a, Vector const &b ) -> T {
-			T sum();
-			if constexpr ( N > 0 ) {
-				for ( size_t i = 0; i < a.size(); ++i ) {
-					sum += a[i] * b[i];
-				}
-			}
-			return sum;
-		}
-
 	};
 
 	template< typename ...T >
@@ -59,6 +49,14 @@ namespace geo {
 		return Vector< std::common_type_t<T...>, sizeof...(T) >{
 				std::forward<T>( t )... };
 	}
+
+	template< typename T, typename S, size_t N, size_t ...I >
+	auto dot( Vector<T, N> const &a, Vector<S, N> const &b,
+			std::index_sequence<I...> = std::make_index_sequence<N>() )
+	{
+		return ( ( std::get<I>(a) * std::get<I>(b) ) + ... );
+	}
+
 
 	template< size_t N > using VectorF = Vector<float, N>;
 	template< size_t N > using VectorD = Vector<double, N>;
