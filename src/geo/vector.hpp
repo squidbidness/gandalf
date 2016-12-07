@@ -75,6 +75,12 @@ namespace geo {
 	using VectorD2 = VectorD<2>;
 	using VectorD3 = VectorD<3>;
 	using VectorD4 = VectorD<4>;
+
+	namespace Vector_shorthand {
+		constexpr auto V_ = [] ( auto &&...t ) {
+			return makeVector( std::forward<decltype(t)>( t )... );
+		};
+	}
 }
 
 #endif

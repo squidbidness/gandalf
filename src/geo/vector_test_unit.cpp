@@ -4,9 +4,11 @@
 
 namespace geo {
 
+	using namespace Vector_shorthand;
+
 	template< typename ...S >
 	auto testComponents( S &&...s ) -> void {
-		auto v = makeVector( std::forward<S>( s )... );
+		auto v = V_( std::forward<S>( s )... );
 
 		if constexpr ( v.size() > 0 ) {
 			EXPECT_EQ( v[0], v.x() )
@@ -27,6 +29,8 @@ namespace geo {
 	}
 
 	TEST( Vector, component_getters ) {
+
+		auto v2 = V_(0.0f, 1.0f, 2.0f);
 
 		testComponents( 0.0f );
 		testComponents( 0.0f, 1.0f );
