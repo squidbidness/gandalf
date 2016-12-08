@@ -10,48 +10,48 @@ namespace geo {
 	template< typename T, size_t N >
 	struct Vector : std::array<T, N> {
 
-		T &x() {
+		constexpr T &x() {
 			static_assert( N > 0 );
 			return (*this)[0];
 		}
-		T const &x() const {
+		constexpr T const &x() const {
 			return x();
 		}
 
-		T &y() {
+		constexpr T &y() {
 			static_assert( N > 1 );
 			return (*this)[1];
 		}
-		T const &y() const {
+		constexpr T const &y() const {
 			return y();
 		}
 
-		T &z() {
+		constexpr T &z() {
 			static_assert( N > 2 );
 			return (*this)[2];
 		}
-		T const &z() const {
+		constexpr T const &z() const {
 			return z();
 		}
 
-		T &w() {
+		constexpr T &w() {
 			static_assert( N > 3 );
 			return (*this)[3];
 		}
-		T const &w() const {
+		constexpr T const &w() const {
 			return w();
 		}
 
 	};
 
 	template< typename ...T >
-	auto makeVector( T &&...t ) {
+	constexpr auto makeVector( T &&...t ) {
 		return Vector< std::common_type_t<T...>, sizeof...(T) >{
 				std::forward<T>( t )... };
 	}
 
 	template< typename T, typename S, size_t N, size_t ...I >
-	auto dot( Vector<T, N> const &a, Vector<S, N> const &b,
+	constexpr auto dot( Vector<T, N> const &a, Vector<S, N> const &b,
 			std::index_sequence<I...> = std::make_index_sequence<N>() )
 	{
 		return ( ( std::get<I>(a) * std::get<I>(b) ) + ... );
