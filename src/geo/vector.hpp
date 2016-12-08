@@ -1,6 +1,8 @@
 #ifndef VECTOR_HPP_DA39A3EE
 #define VECTOR_HPP_DA39A3EE
 
+#include <boost/hana.hpp>
+
 #include <algorithm>
 #include <array>
 #include <initializer_list>
