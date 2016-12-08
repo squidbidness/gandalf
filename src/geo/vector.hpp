@@ -12,7 +12,7 @@ namespace geo {
 
 		constexpr T &x() {
 			static_assert( N > 0 );
-			return (*this)[0];
+			return std::get<0>( *this );
 		}
 		constexpr T const &x() const {
 			return x();
@@ -20,7 +20,7 @@ namespace geo {
 
 		constexpr T &y() {
 			static_assert( N > 1 );
-			return (*this)[1];
+			return std::get<1>( *this );
 		}
 		constexpr T const &y() const {
 			return y();
@@ -28,7 +28,7 @@ namespace geo {
 
 		constexpr T &z() {
 			static_assert( N > 2 );
-			return (*this)[2];
+			return std::get<2>( *this );
 		}
 		constexpr T const &z() const {
 			return z();
@@ -36,7 +36,7 @@ namespace geo {
 
 		constexpr T &w() {
 			static_assert( N > 3 );
-			return (*this)[3];
+			return std::get<3>( *this );
 		}
 		constexpr T const &w() const {
 			return w();
