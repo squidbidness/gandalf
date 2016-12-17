@@ -7,14 +7,37 @@
 #include <array>
 #include <initializer_list>
 
-namespace geo {
+namespace geo::hidden_Vector {
+	using namespace boost::hana::literals;
+}
+
+namespace geo::hidden_Vector::exposed {
 
 	template< typename T, size_t N >
 	struct Vector : std::array<T, N> {
 
+		using Base = std::array<T, N>;
+
+		using Base::operator [];
+
+		template< int I >
+		constexpr T &operator[](
+				std::integral_constant< int, I >
+				)
+		{
+			return std::get<I>( *this );
+		}
+		template< int I >
+		constexpr T const &operator[](
+				std::integral_constant< int, I > i_c
+				)
+		{
+			return (*this)[i_c];
+		}
+
 		constexpr T &x() {
 			static_assert( N > 0 );
-			return std::get<0>( *this );
+			return (*this)[0_c];
 		}
 		constexpr T const &x() const {
 			return x();
@@ -22,7 +45,7 @@ namespace geo {
 
 		constexpr T &y() {
 			static_assert( N > 1 );
-			return std::get<1>( *this );
+			return (*this)[1_c];
 		}
 		constexpr T const &y() const {
 			return y();
@@ -30,7 +53,7 @@ namespace geo {
 
 		constexpr T &z() {
 			static_assert( N > 2 );
-			return std::get<2>( *this );
+			return (*this)[2_c];
 		}
 		constexpr T const &z() const {
 			return z();
@@ -38,7 +61,7 @@ namespace geo {
 
 		constexpr T &w() {
 			static_assert( N > 3 );
-			return std::get<3>( *this );
+			return (*this)[3_c];
 		}
 		constexpr T const &w() const {
 			return w();
@@ -83,6 +106,10 @@ namespace geo {
 			return makeVector( std::forward<decltype(t)>( t )... );
 		};
 	}
+}
+
+namespace geo {
+	using namespace hidden_Vector::exposed;
 }
 
 #endif
