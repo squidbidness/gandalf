@@ -75,11 +75,47 @@ namespace geo::hidden_Vector::exposed {
 				std::forward<T>( t )... };
 	}
 
-	template< typename T, typename S, size_t N, size_t ...I >
-	constexpr auto dot( Vector<T, N> const &a, Vector<S, N> const &b,
-			std::index_sequence<I...> = std::make_index_sequence<N>() )
+
+	template<
+			typename ComponentOp,
+			typename T,
+			typename ...Ts,
+			size_t N,
+			size_t ...Ns,
+			size_t ...I
+			>
+	requires requires( ComponentOp op, T t, Ts ...ts ) {
+		requires ( (N == Ns) && ... );
+		operation( std::forward<T>( t ), std::forward<Ts>( ts )... );
+	}
+	void forEachComponent(
+			ComponentOp operation,
+			Vector<T, N> const &v,
+			Vector<Ts, Ns> const &...vs,
+			std::integer_sequence< int, I... >
+					= std::make_integer_sequence< int, sizeof...(vs) >()
+			)
 	{
-		return ( ( std::get<I>(a) * std::get<I>(b) ) + ... );
+		(
+			operation(
+					v[std::integral_constant< int, I >()],
+					vs[std::integral_constant< int, I >()]...
+					),
+			...
+			);
+	}
+
+	template< size_t N, size_t M >
+	requires N == M
+	auto dot( Vector< auto, N > const &a, Vector< auto, M > const &b ) {
+		using Sum = decltype( a[0_c] + b[0_c] );
+		Sum sum = 0;
+		forEachComponent(
+				[&sum] ( auto s, auto t ) { sum += s * t; },
+				a,
+				b
+				);
+		return sum;
 	}
 
 
