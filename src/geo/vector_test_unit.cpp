@@ -30,8 +30,6 @@ namespace geo {
 
 	TEST( Vector, component_getters ) {
 
-		auto v2 = V_(0.0f, 1.0f, 2.0f);
-
 		testComponents( 0.0f );
 		testComponents( 0.0f, 1.0f );
 		testComponents( 0.0f, 1.0f, 2.0f );
