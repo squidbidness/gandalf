@@ -102,7 +102,7 @@ namespace geo::hidden_Vector::exposed {
 	using VectorD4 = VectorD<4>;
 
 	namespace Vector_shorthand {
-		constexpr auto V_ = [] ( auto &&...t ) {
+		constexpr auto V_( auto &&...t ) {
 			return makeVector( std::forward<decltype(t)>( t )... );
 		};
 	}
