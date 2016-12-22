@@ -56,4 +56,14 @@ namespace geo {
 		testComponents( 0ul, 1ul, 2ul, 3ul );
 	}
 
+	TEST( Vector, dot ) {
+		EXPECT_EQ(
+				4.0f,
+				dot( V_(0.0f, 1.0f, 2.0f, 3.0f), V_(3.0f, 2.0f, 1.0f, 0.0f) )
+				);
+		EXPECT_EQ( 14.0, dot( V_(1.0, 2.0, 3.0), V_(1.0, 2.0, 3.0) ) );
+		EXPECT_EQ( -2, dot( V_(4, -2), V_(-2, -3) ) );
+		EXPECT_EQ( 14u, dot( V_(4, 2), V_(2, 3) ) );
+	}
+
 }

@@ -1,7 +1,9 @@
 #ifndef VECTOR_HPP_DA39A3EE
 #define VECTOR_HPP_DA39A3EE
 
-#include <boost/hana.hpp>
+#include <boost/hana/integral_constant.hpp>
+#include <boost/hana/fold_left.hpp>
+#include <boost/hana/range.hpp>
 
 #include <algorithm>
 #include <array>
@@ -9,6 +11,7 @@
 
 namespace geo::hidden_Vector {
 	using namespace boost::hana::literals;
+	namespace hana = boost::hana;
 }
 
 namespace geo::hidden_Vector::exposed {
@@ -69,6 +72,7 @@ namespace geo::hidden_Vector::exposed {
 
 	};
 
+
 	template< typename ...T >
 	constexpr auto makeVector( T &&...t ) {
 		return Vector< std::common_type_t<T...>, sizeof...(T) >{
@@ -76,46 +80,17 @@ namespace geo::hidden_Vector::exposed {
 	}
 
 
-	template<
-			typename ComponentOp,
-			typename T,
-			typename ...Ts,
-			size_t N,
-			size_t ...Ns,
-			size_t ...I
-			>
-	requires requires( ComponentOp op, T t, Ts ...ts ) {
-		requires ( (N == Ns) && ... );
-		operation( std::forward<T>( t ), std::forward<Ts>( ts )... );
-	}
-	void forEachComponent(
-			ComponentOp operation,
-			Vector<T, N> const &v,
-			Vector<Ts, Ns> const &...vs,
-			std::integer_sequence< int, I... >
-					= std::make_integer_sequence< int, sizeof...(vs) >()
-			)
-	{
-		(
-			operation(
-					v[std::integral_constant< int, I >()],
-					vs[std::integral_constant< int, I >()]...
-					),
-			...
-			);
-	}
-
-	template< size_t N, size_t M >
-	requires N == M
-	auto dot( Vector< auto, N > const &a, Vector< auto, M > const &b ) {
-		using Sum = decltype( a[0_c] + b[0_c] );
-		Sum sum = 0;
-		forEachComponent(
-				[&sum] ( auto s, auto t ) { sum += s * t; },
-				a,
-				b
+	template< typename T, typename S, size_t N >
+	constexpr auto dot( Vector<T, N> const &a, Vector<S, N> const &b ) {
+		using Sum = decltype( std::declval<T>() + std::declval<S>() );
+		using hana::fold_left;
+		return fold_left(
+				hana::make_range( 0_c, hana::int_c<N> ),
+				Sum(0),
+				[&] ( Sum sum, auto i ) {
+					return sum + a[i] * b[i];
+				}
 				);
-		return sum;
 	}
 
 
