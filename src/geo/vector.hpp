@@ -35,7 +35,7 @@ namespace geo::hidden_Vector::exposed {
 				std::integral_constant< int, I > i_c
 				) const
 		{
-			return (*this)[i_c];
+			return std::get<I>( *this );
 		}
 
 		constexpr T &x() {

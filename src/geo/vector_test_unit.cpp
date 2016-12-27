@@ -75,7 +75,14 @@ namespace geo {
 		forEachComponent( [] ( auto I, auto &v ) { v[I] = 10.0f; }, v1 );
 		EXPECT_EQ( V_(10.0f, 10.0f, 10.0f), v1 );
 
-		cout << "SIZE: " << tuple_size<VectorF3>::value << '\n';
+		EXPECT_EQ(
+				V_(10.0f, 40.0f, 90.0f, 160.0f),
+				forEachComponent(
+					[] ( auto I, auto const &a, auto const &b ) { return a[I] * b[I]; },
+					V_(1.0f, 2.0f, 3.0f, 4.0f),
+					V_(10.0f, 20.0f, 30.0f, 40.0f)
+					)
+				);
 	}
 
 }
