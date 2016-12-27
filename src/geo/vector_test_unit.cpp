@@ -2,9 +2,12 @@
 
 #include "vector.hpp"
 
+#include <iostream>
+
 namespace geo {
 
 	using namespace Vector_shorthand;
+	using namespace std;
 
 	template< typename ...S >
 	auto testComponents( S &&...s ) -> void {
@@ -64,6 +67,15 @@ namespace geo {
 		EXPECT_EQ( 14.0, dot( V_(1.0, 2.0, 3.0), V_(1.0, 2.0, 3.0) ) );
 		EXPECT_EQ( -2, dot( V_(4, -2), V_(-2, -3) ) );
 		EXPECT_EQ( 14u, dot( V_(4, 2), V_(2, 3) ) );
+	}
+
+
+	TEST( Vector, forEachComponent ) {
+		VectorF3 v1;
+		forEachComponent( [] ( auto I, auto &v ) { v[I] = 10.0f; }, v1 );
+		EXPECT_EQ( V_(10.0f, 10.0f, 10.0f), v1 );
+
+		cout << "SIZE: " << tuple_size<VectorF3>::value << '\n';
 	}
 
 }
