@@ -33,7 +33,7 @@ namespace geo::hidden_Vector::exposed {
 		template< int I >
 		constexpr T const &operator[](
 				std::integral_constant< int, I > i_c
-				)
+				) const
 		{
 			return (*this)[i_c];
 		}
