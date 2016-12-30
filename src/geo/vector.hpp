@@ -98,10 +98,11 @@ namespace geo::hidden_Vector::exposed {
 					std::remove_reference_t<Vec>
 					>;
 
-	template< typename ...Vecs >
+	template< typename Vec, typename ...Vecs >
 	concept bool VectorsOfSameSize_CV
-			= ( Vector_CV<Vecs> && ... );
-			// && ( std::tuple_size<std::remove_reference_t<Vecs>>::value == ... );
+			= ( Vector_CV<Vec> && ... && Vector_CV<Vecs> )
+			&& (( std::tuple_size<std::remove_reference_t<Vec>>::value
+				== std::tuple_size<std::remove_reference_t<Vecs>>::value ) && ...);
 
 
 	template< typename A, typename B, typename C >
