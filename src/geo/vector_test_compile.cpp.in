@@ -1,0 +1,41 @@
+#include "vector.hpp"
+
+namespace geo {
+
+	using namespace Vector_shorthand;
+	using namespace std;
+
+@TEST forEachComponent {
+
+	@EXPECT {
+		forEachComponent(
+				[] ( auto I, auto const &a, auto const &b ) { return a[I] * b[I]; },
+				V_(1.0f, 2.0f, 3.0f, 4.0f),
+				V_(10.0f, 20.0f, 30.0f, 40.0f)
+				);
+	@}
+
+	@EXPECT {
+		forEachComponent(
+				[] ( auto I, auto const &a, auto const &b, auto const &c ) {
+					return a[I] + b[I] + c[I];
+				},
+				V_(1.0f, 2.0f),
+				V_(10.0f, 20.0f),
+				V_(100.0f, 200.0f, 300.0f)
+				);
+	@}
+
+	@EXPECT {
+		forEachComponent(
+				[] ( auto I, auto const &a, auto const &b, auto const &c ) {
+					return a[I] + b[I] + c[I];
+				},
+				V_(1.0f, 2.0f),
+				V_(10.0f, 20.0f),
+				V_(100.0f, 200.0f)
+				);
+	@}
+
+
+}
