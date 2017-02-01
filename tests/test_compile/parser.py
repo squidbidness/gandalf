@@ -33,19 +33,20 @@ class Node(object):
 			print()
 
 	def __eq__( self, other ):
-		print( "Node.__eq__" )
-		if self._line_no != other._line_no:
-			print( "line_no" )
+		if self.__class__ != other.__class__:
 			return False
-		if len(self.children) != len(other.children):
-			print( "self.children.size()" )
+		if self._line_no != other._line_no:
+			return False
+		if len( self.children ) != len( other.children ):
 			return False
 		succeeded = True
 		for i in range( 0, len(self.children) ):
-			if self.children[i] == other.children[i]:
-				print( "children" )
+			if self.children[i] != other.children[i]:
 				return False
 		return True
+
+	def __ne__( self, other ):
+		return not self.__eq__( other )
 
 	def __str__( self, child_attrs=[] ):
 		result = "{}:{}".format( self.__class__.__name__, self._line_no )
@@ -92,6 +93,9 @@ class TestNode(Node):
 	def __init__( self, line_no, test_name, parent=None, children=[] ):
 		Node.__init__( self, line_no, parent=parent, children=children )
 		self.name = test_name
+
+	def __eq__( self, other ):
+		return self.name == other.name and Node.__eq__( self, other )
 
 	@classmethod
 	def parse( cls, parent, line_no, line ):
@@ -169,6 +173,9 @@ class ErrorNode(Node):
 				'line:{line_no} error: While processing {node}:\n' 
 				'    unexpected line: {line}'
 				).format( line_no=line_no, node=parent, line=line )
+
+	def __eq__( self, other ):
+		return self.line == other.line and Node.__eq__( self, other )
 
 	@classmethod
 	def parse( cls, parent, line_no, line ):
@@ -308,6 +315,7 @@ class ParserTest( unittest.TestCase ):
 							do_the_other_thing();
 						@}
 
+					@}
 
 					""",
 				(
@@ -330,7 +338,8 @@ class ParserTest( unittest.TestCase ):
 							EndNode( 13 )
 							] ),
 						CodeNode( 14 ),
-						EofNode( 15 )
+						CodeNode( 15 ),
+						EofNode( 16 )
 						] )
 					)
 				)
