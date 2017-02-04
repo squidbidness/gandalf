@@ -221,3 +221,26 @@ class ParserTest( unittest.TestCase ):
 					)
 				)
 
+	def test_test_inside_another( self ):
+		runParserTest(
+				self,
+				"""
+					@TEST outer {
+						do_the_thing();
+						@TEST inner {
+							do_the_inner_thing();
+						@}
+					@}
+					""",
+				(
+					False,
+					RootNode( children=[
+						CodeNode( 1 ),
+						TestNode( 2, "outer", children=[
+							CodeNode( 3 ),
+							ErrorNode( 4, "						@TEST inner {" )
+							] )
+						] )
+					)
+				)
+
