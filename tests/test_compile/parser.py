@@ -1,12 +1,16 @@
 from __future__ import print_function
+
+import cStringIO
+import json
 import re
 import sys
-import json
 
 
 class Node(object):
 
-	def __init__( self, line_no, parent=None, children=[] ):
+	def __init__( self, line_no, parent=None, children=None ):
+		if children is None:
+			children = []
 		self._line_no = line_no
 		self.parent = parent
 		self.children = children
@@ -22,15 +26,20 @@ class Node(object):
 	def parse( cls, parent, line_no, line ):
 		raise NotImplementedError
 
-	def print_tree( self, level=0 ):
-		print( "  " * level + self.__str__(), end="" )
+	def tree_string( self ):
+		result = cStringIO.StringIO()
+		self.print_tree( 0, result )
+		return result.getvalue()
+
+	def print_tree( self, level=0, result=sys.stdout ):
+		print( "  " * level + self.__str__(), end="", file=result )
 		if self.children:
-			print( " [" )
+			print( " [", file=result )
 			for c in self.children:
-				c.print_tree( level + 1 )
-			print( "  " * level + "]" )
+				c.print_tree( level + 1, result )
+			print( "  " * level + "]", file=result )
 		else:
-			print()
+			print( file=result )
 
 	def __eq__( self, other ):
 		if self.__class__ != other.__class__:
@@ -57,14 +66,14 @@ class Node(object):
 
 class RootNode(Node):
 
-	def __init__( self, children=[] ):
-		Node.__init__( self, None, parent=None, children=children )
+	def __init__( self, children=None ):
+		Node.__init__( self, 0, children=children )
 
 
 class CodeNode(Node):
 
-	def __init__( self, line_no, parent=None, children=[] ):
-		Node.__init__( self, line_no, parent=parent, children=children )
+	def __init__( self, line_no, parent=None ):
+		Node.__init__( self, line_no, parent=parent )
 
 	@classmethod
 	def parse( cls, parent, line_no, line ):
@@ -78,8 +87,8 @@ class EndNode(Node):
 
 	regex = Node.make_parse_regex('}')
 
-	def __init__( self, line_no, parent=None, children=[] ):
-		Node.__init__( self, line_no, parent=parent, children=children )
+	def __init__( self, line_no, parent=None ):
+		Node.__init__( self, line_no, parent=parent )
 
 	@classmethod
 	def parse( cls, parent, line_no, line ):
@@ -90,7 +99,7 @@ class EndNode(Node):
 class TestNode(Node):
 	regex = Node.make_parse_regex( 'TEST\s*(\w+)\s*{' )
 
-	def __init__( self, line_no, test_name, parent=None, children=[] ):
+	def __init__( self, line_no, test_name, parent=None, children=None ):
 		Node.__init__( self, line_no, parent=parent, children=children )
 		self.name = test_name
 
@@ -100,7 +109,7 @@ class TestNode(Node):
 	@classmethod
 	def parse( cls, parent, line_no, line ):
 		result = cls.regex.match( line )
-		return TestNode( line_no, result.group(1), parent=parent ) if result else None
+		return TestNode( line_no, result.group(1), parent=parent, children=[] ) if result else None
 
 	def __str__( self ):
 		return Node.__str__( self, ['name'] )
@@ -109,7 +118,7 @@ class TestNode(Node):
 class ExpectNode(Node):
 	regex = Node.make_parse_regex( 'EXPECT\s*{' )
 
-	def __init__( self, line_no, parent=None, children=[] ):
+	def __init__( self, line_no, parent=None, children=None ):
 		Node.__init__( self, line_no, parent=parent, children=children )
 
 	@classmethod
@@ -121,7 +130,7 @@ class ExpectNode(Node):
 class ExpectNotNode(Node):
 	regex = Node.make_parse_regex( 'EXPECT_NOT\s*{' )
 
-	def __init__( self, line_no, parent=None, children=[] ):
+	def __init__( self, line_no, parent=None, children=None ):
 		Node.__init__( self, line_no, parent=parent, children=children )
 
 	@classmethod
@@ -133,7 +142,7 @@ class ExpectNotNode(Node):
 class AssertNode(Node):
 	regex = Node.make_parse_regex( 'ASSERT\s*{' )
 
-	def __init__( self, line_no, parent=None, children=[] ):
+	def __init__( self, line_no, parent=None, children=None ):
 		Node.__init__( self, line_no, parent=parent, children=children )
 
 	@classmethod
@@ -145,7 +154,7 @@ class AssertNode(Node):
 class AssertNotNode(Node):
 	regex = Node.make_parse_regex( 'ASSERT_NOT\s*{' )
 
-	def __init__( self, line_no, parent=None, children=[] ):
+	def __init__( self, line_no, parent=None, children=None ):
 		Node.__init__( self, line_no, parent=parent, children=children )
 
 	@classmethod
@@ -156,7 +165,7 @@ class AssertNotNode(Node):
 
 class EofNode(Node):
 
-	def __init__( self, line_no, parent=None, children=[] ):
+	def __init__( self, line_no, parent=None, children=None ):
 		Node.__init__( self, line_no, parent=parent, children=children )
 
 	@classmethod
@@ -166,8 +175,8 @@ class EofNode(Node):
 
 class ErrorNode(Node):
 
-	def __init__( self, line_no, line, parent=None, children=[] ):
-		Node.__init__( self, line_no, parent=parent, children=children )
+	def __init__( self, line_no, line, parent=None ):
+		Node.__init__( self, line_no, parent=parent )
 		self.line = line
 		self.msg = (
 				'line:{line_no} error: While processing {node}:\n' 
@@ -235,6 +244,31 @@ class Parser(object):
 		self._line_no = 0
 		self._infile.seek( self._infile_init_pos )
 
+	def __str__( self ):
+		return (
+"""
+_infile_init_pos = {}
+_infile.getvalue() = (
+{}
+)
+_state = {}
+_ast_root.tree_string() = (
+{}
+)
+_node.tree_string() = (
+{}
+)
+_line_no = {}
+
+""".format(
+		self._infile_init_pos,
+		self._infile.getvalue(),
+		self._state,
+		self._ast_root.tree_string(),
+		self._node.tree_string(),
+		self._line_no
+		) )
+
 	def _step( self ):
 
 		if self._state in [_State.Accept, _State.Reject]:
@@ -285,45 +319,69 @@ class Parser(object):
 
 
 import unittest
-import cStringIO
 
 
-class _ParserTestCase():
-
-	def __init__( self, parser_test, input_str, expected ):
-		parser = Parser( cStringIO.StringIO( input_str ) )
-		succeeded, result = parser.run()
-		result.print_tree()
-		parser_test.assertEqual( expected, (succeeded, result) )
-		expected[1].print_tree()
+def runParserTest( parser_test, input_str, expected ):
+	input_file = cStringIO.StringIO( input_str )
+	parser = Parser( input_file )
+	succeeded, result = parser.run()
+	input_file.close()
+	parser_test.assertEqual(
+			expected,
+			(succeeded, result),
+			"For _ParserTestCase {}:\nExpected:\n{}\nActual:\n{}\n".format(
+					parser_test, expected[1].tree_string(),
+					result.tree_string()
+					)
+			)
 
 
 class ParserTest( unittest.TestCase ):
 
+	def test_empty_test( self ):
+		runParserTest(
+				self,
+				"""
+					@TEST test_empty_test {
+					@}
+				""",
+				(
+					True,
+					RootNode( children=[
+						CodeNode( 1 ),
+						TestNode( 2, 'test_empty_test', children=[
+							EndNode( 3 )
+							] ),
+						CodeNode( 4 ),
+						EofNode( 5 )
+						] )
+					)
+				)
+
 	def test_brief_valid( self ):
-		_ParserTestCase(
+		runParserTest(
 				self,
 				"""
 					#include <nonsense>
-					@TEST test1 {
+					@TEST test_brief_valid {
 						setup();
 						@EXPECT {
 							do_the_thing();
 						@}
-
+						
 						@EXPECT_NOT {
 							do_the_other_thing();
 						@}
-
+						
 					@}
-
+					
 					""",
 				(
 					True,
 					RootNode( children=[
 						CodeNode( 1 ),
 						CodeNode( 2 ),
-						TestNode( 3, 'test1', children=[
+						TestNode( 3, 'test_brief_valid', children=[
 							CodeNode( 4 ),
 							ExpectNode( 5, children=[
 								CodeNode( 6 ),
