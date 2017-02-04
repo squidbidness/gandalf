@@ -175,13 +175,15 @@ class EofNode(Node):
 
 class ErrorNode(Node):
 
-	def __init__( self, line_no, line, parent=None ):
+	def __init__( self, line_no, line, parent=None, message=None ):
 		Node.__init__( self, line_no, parent=parent )
+		if message is None:
+			message = "unexpected line: {line}".format( line=line )
 		self.line = line
 		self.msg = (
-				'line:{line_no} error: While processing {node}:\n' 
-				'    unexpected line: {line}'
-				).format( line_no=line_no, node=parent, line=line )
+				'line:{} error: While processing {}:\n' 
+				'    {}'.format( line_no, parent, message )
+				)
 
 	def __eq__( self, other ):
 		return self.line == other.line and Node.__eq__( self, other )
@@ -318,8 +320,8 @@ _line_no = {}
 		return result
 
 
-import unittest
 
+import unittest
 
 def runParserTest( parser_test, input_str, expected ):
 	input_file = cStringIO.StringIO( input_str )
@@ -423,8 +425,20 @@ class ParserTest( unittest.TestCase ):
 				)
 
 	def test_unnamed_test( self ):
-		"TODO"
-		pass
+		runParserTest(
+				self,
+				"""
+					@TEST {
+					@}
+					""",
+				(
+					False,
+					RootNode( children=[
+						CodeNode( 1 ),
+						ErrorNode( 2, "					@TEST {" )
+						] )
+					)
+				)
 
 
 
