@@ -60,7 +60,11 @@ class Node(object):
 	def __str__( self, child_attrs=[] ):
 		result = "{}:{}".format( self.__class__.__name__, self._line_no )
 		for attr in child_attrs:
-			result = result + ", {}={}".format( attr, getattr(self, attr) )
+			value = getattr(self, attr)
+			result = result + ", {}={}".format(
+					attr,
+					'"{}"'.format( value ) if isinstance(value, str) else value
+					)
 		return result
 
 
