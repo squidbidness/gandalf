@@ -344,7 +344,7 @@ class ParserTest( unittest.TestCase ):
 				"""
 					@TEST test_empty_test {
 					@}
-				""",
+					""",
 				(
 					True,
 					RootNode( children=[
@@ -401,6 +401,31 @@ class ParserTest( unittest.TestCase ):
 						] )
 					)
 				)
+
+	def test_unclosed_test( self ):
+		runParserTest(
+				self,
+				"""
+					@TEST unclosed {
+						do_the_thing();
+					""",
+				(
+					False,
+					RootNode( children=[
+						CodeNode( 1 ),
+						TestNode( 2, "unclosed", children=[
+							CodeNode( 3 ),
+							CodeNode( 4 ),
+							ErrorNode( 5, "" )
+							] )
+						] )
+					)
+				)
+
+	def test_unnamed_test( self ):
+		"TODO"
+		pass
+
 
 
 
