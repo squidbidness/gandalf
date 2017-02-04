@@ -444,6 +444,106 @@ class ParserTest( unittest.TestCase ):
 					)
 				)
 
+	def test_mismatched_closing_brace( self ):
+		runParserTest(
+				self,
+				"""
+					@}
+					""",
+				(
+					False,
+					RootNode( children=[
+						CodeNode( 1 ),
+						ErrorNode( 2, "					@}" )
+						] )
+					)
+				)
 
+	def test_empty_test( self ):
+		runParserTest(
+				self,
+				"""
+					@TEST empty {
+						do_the_thing();
+					@}
+					""",
+				(
+					False,
+					RootNode( children=[
+						CodeNode( 1 ),
+						TestNode( 2, "empty", children=[
+							CodeNode( 3 ),
+							ErrorNode( 4, "					@}" )
+							] )
+						] )
+					)
+				)
 
+	def test_expect_outside_test( self ):
+		runParserTest(
+				self,
+				"""
+					@EXPECT {
+						do_the_thing();
+					@}
+					""",
+				(
+					False,
+					RootNode( children=[
+						CodeNode( 1 ),
+						ErrorNode( 2, "					@EXPECT {" )
+						] )
+					)
+				)
+
+	def test_expect_not_outside_test( self ):
+		runParserTest(
+				self,
+				"""
+					@EXPECT_NOT {
+						do_the_thing();
+					@}
+					""",
+				(
+					False,
+					RootNode( children=[
+						CodeNode( 1 ),
+						ErrorNode( 2, "					@EXPECT_NOT {" )
+						] )
+					)
+				)
+
+	def test_assert_outside_test( self ):
+		runParserTest(
+				self,
+				"""
+					@ASSERT {
+						do_the_thing();
+					@}
+					""",
+				(
+					False,
+					RootNode( children=[
+						CodeNode( 1 ),
+						ErrorNode( 2, "					@ASSERT {" )
+						] )
+					)
+				)
+
+	def test_assert_not_outside_test( self ):
+		runParserTest(
+				self,
+				"""
+					@ASSERT_NOT {
+						do_the_thing();
+					@}
+					""",
+				(
+					False,
+					RootNode( children=[
+						CodeNode( 1 ),
+						ErrorNode( 2, "					@ASSERT_NOT {" )
+						] )
+					)
+				)
 
