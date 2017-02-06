@@ -244,3 +244,54 @@ class ParserTest( unittest.TestCase ):
 					)
 				)
 
+	def test_nested_assertions( self ):
+
+		all_assertion_errors = []
+
+		types = {
+				"EXPECT" : ExpectNode,
+				"EXPECT_NOT" : ExpectNotNode,
+				"ASSERT" : AssertNode,
+				"ASSERT_NOT" : AssertNotNode
+				}
+
+		for keyword_i, node_class_i in enumerate( types ):
+			for keyword_j, node_class_j in enumerate( types ):
+				try:
+					runParserTest(
+							self,
+							"""
+								@TEST test {{
+									@{} {{
+										do_the_thing();
+										@{} {{
+											do_the_nested_thing();
+										@}}
+										do_the_after_thing();
+									@}}
+								@}}
+								""".format( keyword_i, keyword_j ),
+							(
+								False,
+								RootNode( children=[
+									CodeNode( 1 ),
+									TestNode( 2, "test", children=[
+										CodeNode( 3 ),
+										ExpectNode( 4, children=[
+											CodeNode( 5 ),
+											ErrorNode(
+													6,
+													"									@{} {{".format( keyword_j )
+													)
+											] )
+										] )
+									] )
+								)
+							)
+				except AssertionError, e:
+					all_assertion_errors.append( e )
+
+		for e in all_assertion_errors:
+			print( e )
+		self.assertEqual( [], all_assertion_errors )
+
