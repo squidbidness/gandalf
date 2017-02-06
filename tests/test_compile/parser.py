@@ -76,12 +76,14 @@ class RootNode(Node):
 
 class CodeNode(Node):
 
+	not_regex = re.compile( '\s*@.*' )
+
 	def __init__( self, line_no, parent=None ):
 		Node.__init__( self, line_no, parent=parent )
 
 	@classmethod
 	def parse( cls, parent, line_no, line ):
-		if line != None and line != "":
+		if line != None and line != "" and not cls.not_regex.match( line ):
 			return CodeNode( line_no, parent=parent )
 		else:
 			return None
