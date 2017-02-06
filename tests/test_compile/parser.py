@@ -200,10 +200,6 @@ class ErrorNode(Node):
 		return line[:-1] if line[-1] == "\n" else (
 				"EOF" if line == "" else line )
 
-	@classmethod
-	def parse( cls, parent, line_no, line ):
-		return ErrorNode( line_no, line, parent=parent )
-
 	def __str__( self ):
 		return Node.__str__( self, ['line', 'msg'] )
 
