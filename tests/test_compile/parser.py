@@ -183,8 +183,10 @@ class ErrorNode(Node):
 
 	def __init__( self, line_no, line, parent=None, message=None ):
 		Node.__init__( self, line_no, parent=parent )
+
+		line = self.trim_newline( line )
 		if message is None:
-			message = "unexpected line: {line}".format( line=line )
+			message = "unexpected line: \"{line}\"".format( line=line )
 		self.line = line
 		self.msg = (
 				'line:{} error: While processing {}:\n' 
@@ -193,6 +195,10 @@ class ErrorNode(Node):
 
 	def __eq__( self, other ):
 		return self.line == other.line and Node.__eq__( self, other )
+
+	def trim_newline( self, line ):
+		return line[:-1] if line[-1] == "\n" else (
+				"EOF" if line == "" else line )
 
 	@classmethod
 	def parse( cls, parent, line_no, line ):
