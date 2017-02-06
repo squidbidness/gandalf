@@ -255,8 +255,8 @@ class ParserTest( unittest.TestCase ):
 				"ASSERT_NOT" : AssertNotNode
 				}
 
-		for keyword_i, node_class_i in enumerate( types ):
-			for keyword_j, node_class_j in enumerate( types ):
+		for keyword_i, node_class_i in types.iteritems():
+			for keyword_j, node_class_j in types.iteritems():
 				try:
 					runParserTest(
 							self,
@@ -276,12 +276,11 @@ class ParserTest( unittest.TestCase ):
 								RootNode( children=[
 									CodeNode( 1 ),
 									TestNode( 2, "test", children=[
-										CodeNode( 3 ),
-										ExpectNode( 4, children=[
-											CodeNode( 5 ),
+										node_class_i( 3, children=[
+											CodeNode( 4 ),
 											ErrorNode(
-													6,
-													"									@{} {{".format( keyword_j )
+													5,
+													"										@{} {{".format( keyword_j )
 													)
 											] )
 										] )
