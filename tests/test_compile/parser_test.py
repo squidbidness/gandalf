@@ -1,4 +1,4 @@
-import parser
+from parser import *
 import unittest
 
 def runParserTest( parser_test, input_str, expected ):
