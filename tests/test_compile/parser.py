@@ -24,7 +24,10 @@ class Node(object):
 
 	@classmethod
 	def parse( cls, parent, line_no, line ):
-		raise NotImplementedError
+		if cls == Node:
+			raise NotImplementedError
+		result = cls.regex.match( line ) if line else None
+		return cls( line_no, parent=parent ) if result else None
 
 	def tree_string( self ):
 		result = cStringIO.StringIO()
@@ -96,11 +99,6 @@ class EndNode(Node):
 	def __init__( self, line_no, parent=None ):
 		Node.__init__( self, line_no, parent=parent )
 
-	@classmethod
-	def parse( cls, parent, line_no, line ):
-		result = cls.regex.match( line )
-		return EndNode( line_no, parent=parent ) if result else None
-
 
 class TestNode(Node):
 	regex = Node.make_parse_regex( 'TEST\s*(\w+)\s*{' )
@@ -127,22 +125,12 @@ class ExpectNode(Node):
 	def __init__( self, line_no, parent=None, children=None ):
 		Node.__init__( self, line_no, parent=parent, children=children )
 
-	@classmethod
-	def parse( cls, parent, line_no, line ):
-		result = cls.regex.match( line )
-		return ExpectNode( line_no, parent=parent ) if result else None
-
 
 class ExpectNotNode(Node):
 	regex = Node.make_parse_regex( 'EXPECT_NOT\s*{' )
 
 	def __init__( self, line_no, parent=None, children=None ):
 		Node.__init__( self, line_no, parent=parent, children=children )
-
-	@classmethod
-	def parse( cls, parent, line_no, line ):
-		result = cls.regex.match( line )
-		return ExpectNotNode( line_no, parent=parent ) if result else None
 
 
 class AssertNode(Node):
@@ -151,22 +139,12 @@ class AssertNode(Node):
 	def __init__( self, line_no, parent=None, children=None ):
 		Node.__init__( self, line_no, parent=parent, children=children )
 
-	@classmethod
-	def parse( cls, parent, line_no, line ):
-		result = cls.regex.match( line )
-		return AssertNode( line_no, parent=parent ) if result else None
-
 
 class AssertNotNode(Node):
 	regex = Node.make_parse_regex( 'ASSERT_NOT\s*{' )
 
 	def __init__( self, line_no, parent=None, children=None ):
 		Node.__init__( self, line_no, parent=parent, children=children )
-
-	@classmethod
-	def parse( cls, parent, line_no, line ):
-		result = cls.regex.match( line )
-		return AssertNotNode( line_no, parent=parent ) if result else None
 
 
 class EofNode(Node):
