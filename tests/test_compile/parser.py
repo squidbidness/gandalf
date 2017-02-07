@@ -49,7 +49,7 @@ class Node(object):
 		if len( self.children ) != len( other.children ):
 			return False
 		succeeded = True
-		for i in range( 0, len(self.children) ):
+		for i in range( 0, len( self.children ) ):
 			if self.children[i] != other.children[i]:
 				return False
 		return True
@@ -83,7 +83,7 @@ class CodeNode(Node):
 
 	@classmethod
 	def parse( cls, parent, line_no, line ):
-		if line != None and line != "" and not cls.not_regex.match( line ):
+		if line != None and not cls.not_regex.match( line ):
 			return CodeNode( line_no, parent=parent )
 		else:
 			return None
@@ -176,7 +176,7 @@ class EofNode(Node):
 
 	@classmethod
 	def parse( cls, parent, line_no, line ):
-		return EofNode( line_no, parent=parent ) if not line else None
+		return EofNode( line_no, parent=parent ) if line is None else None
 
 
 class ErrorNode(Node):
@@ -184,7 +184,6 @@ class ErrorNode(Node):
 	def __init__( self, line_no, line, parent=None, message=None ):
 		Node.__init__( self, line_no, parent=parent )
 
-		line = self.trim_newline( line )
 		if message is None:
 			message = "unexpected line: \"{line}\"".format( line=line )
 		self.line = line
@@ -195,10 +194,6 @@ class ErrorNode(Node):
 
 	def __eq__( self, other ):
 		return self.line == other.line and Node.__eq__( self, other )
-
-	def trim_newline( self, line ):
-		return line[:-1] if line[-1] == "\n" else (
-				"EOF" if line == "" else line )
 
 	def __str__( self ):
 		return Node.__str__( self, ['line', 'msg'] )
@@ -279,13 +274,19 @@ _line_no = {}
 		self._line_no
 		) )
 
+	@classmethod
+	def _trim_newline_or_check_eof( cls, line ):
+		"Convert EOF line to None and trim newline from end of line if present"
+		return None if line == "" else (
+				line[0:-1] if line[-1] == "\n" else line )
+
 	def _step( self ):
 
 		if self._state in [_State.Accept, _State.Reject]:
 			return
 
 		self._line_no = self._line_no + 1
-		line = self._infile.readline()
+		line = Parser._trim_newline_or_check_eof( self._infile.readline() )
 		transitions = self._state_trans[self._state]
 
 		for node_class, next_state, action in transitions:
