@@ -204,8 +204,9 @@ class _State:
 	Reject = 1
 	Accept = 2
 
-	Test = 10
-	Assertion = 11
+	TestBeforeAssertion = 10
+	TestAfterAssertion = 11
+	Assertion = 12
 
 
 class _AstOp:
@@ -219,21 +220,28 @@ class Parser(object):
 	_state_trans = {
 			_State.Start : [
 				(EofNode, _State.Accept, _AstOp.Append),
-				(TestNode, _State.Test, _AstOp.Push),
+				(TestNode, _State.TestBeforeAssertion, _AstOp.Push),
 				(CodeNode, _State.Start, _AstOp.Append)
 				],
 
-			_State.Test : [
+			_State.TestBeforeAssertion : [
+				(ExpectNode, _State.Assertion, _AstOp.Push),
+				(ExpectNotNode, _State.Assertion, _AstOp.Push),
+				(AssertNode, _State.Assertion, _AstOp.Push),
+				(AssertNotNode, _State.Assertion, _AstOp.Push),
+				(CodeNode, _State.TestBeforeAssertion, _AstOp.Append)
+				],
+			_State.Assertion : [
+				(EndNode, _State.TestAfterAssertion, _AstOp.Pop),
+				(CodeNode, _State.Assertion, _AstOp.Append)
+				],
+			_State.TestAfterAssertion : [
 				(EndNode, _State.Start, _AstOp.Pop),
 				(ExpectNode, _State.Assertion, _AstOp.Push),
 				(ExpectNotNode, _State.Assertion, _AstOp.Push),
 				(AssertNode, _State.Assertion, _AstOp.Push),
 				(AssertNotNode, _State.Assertion, _AstOp.Push),
-				(CodeNode, _State.Test, _AstOp.Append)
-				],
-			_State.Assertion : [
-				(EndNode, _State.Test, _AstOp.Pop),
-				(CodeNode, _State.Assertion, _AstOp.Append)
+				(CodeNode, _State.TestAfterAssertion, _AstOp.Append)
 				]
 			}
 
