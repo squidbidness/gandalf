@@ -112,7 +112,7 @@ class TestNode(Node):
 
 	@classmethod
 	def parse( cls, parent, line_no, line ):
-		result = cls.regex.match( line )
+		result = cls.regex.match( line ) if line else None
 		return TestNode( line_no, result.group(1), parent=parent, children=[] ) if result else None
 
 	def __str__( self ):

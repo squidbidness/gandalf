@@ -30,10 +30,8 @@ class ParserTest( unittest.TestCase ):
 					RootNode( children=[
 						CodeNode( 1 ),
 						TestNode( 2, 'test_empty_test', children=[
-							EndNode( 3 )
-							] ),
-						CodeNode( 4 ),
-						EofNode( 5 )
+							ErrorNode( 3, "					@}" )
+							] )
 						] )
 					)
 				)
@@ -96,7 +94,7 @@ class ParserTest( unittest.TestCase ):
 						TestNode( 2, "unclosed", children=[
 							CodeNode( 3 ),
 							CodeNode( 4 ),
-							ErrorNode( 5, "" )
+							ErrorNode( 5, None )
 							] )
 						] )
 					)
@@ -133,7 +131,7 @@ class ParserTest( unittest.TestCase ):
 					)
 				)
 
-	def test_empty_test( self ):
+	def test_test_without_assertions( self ):
 		runParserTest(
 				self,
 				"""
