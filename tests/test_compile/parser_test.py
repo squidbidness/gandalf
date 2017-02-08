@@ -26,7 +26,7 @@ class ParserTest( unittest.TestCase ):
 					@}
 					""",
 				(
-					True,
+					False,
 					RootNode( children=[
 						CodeNode( 1 ),
 						TestNode( 2, 'test_empty_test', children=[
