@@ -119,32 +119,46 @@ class TestNode(Node):
 		return Node.__str__( self, ['name'] )
 
 
-class ExpectNode(Node):
-	regex = Node.make_parse_regex( 'EXPECT\s*{' )
-
+class AssertionNode(Node):
 	def __init__( self, line_no, parent=None, children=None ):
 		Node.__init__( self, line_no, parent=parent, children=children )
 
-
-class ExpectNotNode(Node):
-	regex = Node.make_parse_regex( 'EXPECT_NOT\s*{' )
-
-	def __init__( self, line_no, parent=None, children=None ):
-		Node.__init__( self, line_no, parent=parent, children=children )
-
-
-class AssertNode(Node):
-	regex = Node.make_parse_regex( 'ASSERT\s*{' )
-
-	def __init__( self, line_no, parent=None, children=None ):
-		Node.__init__( self, line_no, parent=parent, children=children )
+	@classmethod
+	def parse( cls, parent, line_no, line ):
+		for sub in cls.__subclasses__():
+			result = Node.parse.im_func( sub, parent, line_no, line )
+			if result:
+				return result
+		
+		return None
 
 
-class AssertNotNode(Node):
-	regex = Node.make_parse_regex( 'ASSERT_NOT\s*{' )
+class ExpectNode(AssertionNode):
+	regex = AssertionNode.make_parse_regex( 'EXPECT\s*{' )
 
 	def __init__( self, line_no, parent=None, children=None ):
-		Node.__init__( self, line_no, parent=parent, children=children )
+		AssertionNode.__init__( self, line_no, parent=parent, children=children )
+
+
+class ExpectNotNode(AssertionNode):
+	regex = AssertionNode.make_parse_regex( 'EXPECT_NOT\s*{' )
+
+	def __init__( self, line_no, parent=None, children=None ):
+		AssertionNode.__init__( self, line_no, parent=parent, children=children )
+
+
+class AssertNode(AssertionNode):
+	regex = AssertionNode.make_parse_regex( 'ASSERT\s*{' )
+
+	def __init__( self, line_no, parent=None, children=None ):
+		AssertionNode.__init__( self, line_no, parent=parent, children=children )
+
+
+class AssertNotNode(AssertionNode):
+	regex = AssertionNode.make_parse_regex( 'ASSERT_NOT\s*{' )
+
+	def __init__( self, line_no, parent=None, children=None ):
+		AssertionNode.__init__( self, line_no, parent=parent, children=children )
 
 
 class EofNode(Node):
@@ -203,10 +217,7 @@ class Parser(object):
 				],
 
 			_State.TestBeforeAssertion : [
-				(ExpectNode, _State.Assertion, _AstOp.Push),
-				(ExpectNotNode, _State.Assertion, _AstOp.Push),
-				(AssertNode, _State.Assertion, _AstOp.Push),
-				(AssertNotNode, _State.Assertion, _AstOp.Push),
+				(AssertionNode, _State.Assertion, _AstOp.Push),
 				(CodeNode, _State.TestBeforeAssertion, _AstOp.Append)
 				],
 			_State.Assertion : [
@@ -215,10 +226,7 @@ class Parser(object):
 				],
 			_State.TestAfterAssertion : [
 				(EndNode, _State.Start, _AstOp.Pop),
-				(ExpectNode, _State.Assertion, _AstOp.Push),
-				(ExpectNotNode, _State.Assertion, _AstOp.Push),
-				(AssertNode, _State.Assertion, _AstOp.Push),
-				(AssertNotNode, _State.Assertion, _AstOp.Push),
+				(AssertionNode, _State.Assertion, _AstOp.Push),
 				(CodeNode, _State.TestAfterAssertion, _AstOp.Append)
 				]
 			}
