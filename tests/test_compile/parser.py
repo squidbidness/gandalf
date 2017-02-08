@@ -200,36 +200,65 @@ class _State:
 	TestAfterAssertion = 11
 	Assertion = 12
 
-
 class _AstOp:
 	Push = 0
 	Pop = 1
 	Append = 2
 
+class _StateTrans:
+	m = {
+		_State.Start : [
+			(EofNode, _State.Accept, _AstOp.Append),
+			(TestNode, _State.TestBeforeAssertion, _AstOp.Push),
+			(CodeNode, _State.Start, _AstOp.Append)
+			],
+
+		_State.TestBeforeAssertion : [
+			(AssertionNode, _State.Assertion, _AstOp.Push),
+			(CodeNode, _State.TestBeforeAssertion, _AstOp.Append)
+			],
+		_State.Assertion : [
+			(EndNode, _State.TestAfterAssertion, _AstOp.Pop),
+			(CodeNode, _State.Assertion, _AstOp.Append)
+			],
+		_State.TestAfterAssertion : [
+			(EndNode, _State.Start, _AstOp.Pop),
+			(AssertionNode, _State.Assertion, _AstOp.Push),
+			(CodeNode, _State.TestAfterAssertion, _AstOp.Append)
+			]
+		}
+
+class _InvalidTrans:
+	m = {
+			s : [ n for n in [ CodeNode, EndNode, TestNode, AssertionNode, EofNode ]
+					if n not in _StateTrans.m[s] ]
+				for s in _StateTrans.m
+			}
+
+class _InvalidTransErrors:
+	m = {
+		_State.Start : {
+			EndNode : "Unmatched @}",
+			AssertionNode : "Assertion block outside of a @TEST block",
+			},
+		_State.TestBeforeAssertion : {
+			EndNode : "@TEST block contains no assertion blocks",
+			TestNode : "@TEST block nested inside another @TEST",
+			EofNode : "@TEST not closed before EOF"
+			},
+		_State.Assertion : {
+			TestNode : "@TEST block inside an assertion block",
+			AssertionNode : "Assertion block nested inside another assertion block",
+			EofNode : "Assertion block not closed before EOF"
+			},
+		_State.TestAfterAssertion : {
+			TestNode : "@TEST block nested inside another @TEST",
+			EofNode : "@TEST block not closed before EOF"
+			}
+		}
+
 
 class Parser(object):
-	
-	_state_trans = {
-			_State.Start : [
-				(EofNode, _State.Accept, _AstOp.Append),
-				(TestNode, _State.TestBeforeAssertion, _AstOp.Push),
-				(CodeNode, _State.Start, _AstOp.Append)
-				],
-
-			_State.TestBeforeAssertion : [
-				(AssertionNode, _State.Assertion, _AstOp.Push),
-				(CodeNode, _State.TestBeforeAssertion, _AstOp.Append)
-				],
-			_State.Assertion : [
-				(EndNode, _State.TestAfterAssertion, _AstOp.Pop),
-				(CodeNode, _State.Assertion, _AstOp.Append)
-				],
-			_State.TestAfterAssertion : [
-				(EndNode, _State.Start, _AstOp.Pop),
-				(AssertionNode, _State.Assertion, _AstOp.Push),
-				(CodeNode, _State.TestAfterAssertion, _AstOp.Append)
-				]
-			}
 
 	def __init__( self, infile ):
 		self._infile_init_pos = infile.tell()
@@ -274,6 +303,15 @@ _line_no = {}
 		return None if line == "" else (
 				line[0:-1] if line[-1] == "\n" else line )
 
+	def _get_invalid_transition_error( self, line ):
+		err_msg = None
+		for node_cls in _InvalidTrans.m[self._state]:
+			if node_cls.parse( self._node, self._line_no, line ):
+				err_msg = _InvalidTransErrors.m[self._state][node_cls]
+				break
+
+		return ErrorNode( self._line_no, line, parent=self._node, message=err_msg )
+
 	def _step( self ):
 
 		if self._state in [_State.Accept, _State.Reject]:
@@ -281,7 +319,7 @@ _line_no = {}
 
 		self._line_no = self._line_no + 1
 		line = Parser._trim_newline_or_check_eof( self._infile.readline() )
-		transitions = self._state_trans[self._state]
+		transitions = _StateTrans.m[self._state]
 
 		for node_class, next_state, action in transitions:
 			result = node_class.parse( self._node, self._line_no, line )
@@ -300,7 +338,8 @@ _line_no = {}
 				self._state = next_state
 				return
 
-		err = ErrorNode( self._line_no, line, parent=self._node )
+		err = self._get_invalid_transition_error( line )
+
 		self._node.children.append( err )
 		self._node = err
 		self._state = _State.Reject
