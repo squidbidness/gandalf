@@ -57,8 +57,7 @@ class ParserTest( unittest.TestCase ):
 				(
 					True,
 					RootNode( children=[
-						CodeNode( 1 ),
-						CodeNode( 2 ),
+						CodeNode( 1, end_line=3 ),
 						TestNode( 3, 'test_brief_valid', children=[
 							CodeNode( 4 ),
 							ExpectNode( 5, children=[
@@ -73,8 +72,7 @@ class ParserTest( unittest.TestCase ):
 							CodeNode( 12 ),
 							EndNode( 13 )
 							] ),
-						CodeNode( 14 ),
-						CodeNode( 15 ),
+						CodeNode( 14, end_line=16 ),
 						EofNode( 16 )
 						] )
 					)
@@ -92,8 +90,7 @@ class ParserTest( unittest.TestCase ):
 					RootNode( children=[
 						CodeNode( 1 ),
 						TestNode( 2, "unclosed", children=[
-							CodeNode( 3 ),
-							CodeNode( 4 ),
+							CodeNode( 3, end_line=5 ),
 							ErrorNode( 5, None )
 							] )
 						] )
@@ -292,4 +289,57 @@ class ParserTest( unittest.TestCase ):
 		for e in all_assertion_errors:
 			print( e )
 		self.assertEqual( [], all_assertion_errors )
+
+	def test_multiple_consec_code_lines( self ):
+		runParserTest(
+				"""code1
+					code2
+					code3
+					code4
+					@TEST test1 {
+						code6
+						code7
+						code8
+						@EXPECT {
+							code10
+							code11
+						@}
+						code13
+						@EXPECT {
+							code15
+						@}
+						code17
+						code18
+						code19
+					@}
+
+
+
+					""",
+				(
+					True,
+					RootNode( children=[
+						CodeNode( 1, end_line=5 ),
+						TestNode( 5, "test1", children=[
+							CodeNode( 6, end_line=9 ),
+							ExpectNode( 9, children=[
+								CodeNode( 10, end_line=12 ),
+								EndNode( 12 )
+								] ),
+							CodeNode( 13, end_line=14 ),
+							ExpectNode( 14, children=[
+								CodeNode( 15, end_line=16 ),
+								EndNode( 16 ),
+								] ),
+							CodeNode( 17, end_line=20 ),
+							EndNode( 20 ),
+							] ),
+						CodeNode( 21, end_line=25 ),
+						EndNode( 25 )
+						] )
+					)
+				)
+
+
+	# TODO: test_unconventional_whitespace_in_test_decl
 

@@ -81,8 +81,18 @@ class CodeNode(Node):
 
 	not_regex = re.compile( '\s*@.*' )
 
-	def __init__( self, line_no, parent=None ):
+	def __init__( self, line_no, parent=None, end_line=None ):
 		Node.__init__( self, line_no, parent=parent )
+		if end_line == None:
+			end_line = line_no + 1
+
+		self.end_line = end_line
+
+	def __eq__( self, other ):
+		return self.end_line == other.end_line and Node.__eq__( self, other )
+
+	def __str__( self ):
+		return Node.__str__( self, ['end_line'] )
 
 	@classmethod
 	def parse( cls, parent, line_no, line ):
