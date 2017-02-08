@@ -30,7 +30,7 @@ class ParserTest( unittest.TestCase ):
 					RootNode( children=[
 						CodeNode( 1 ),
 						TestNode( 2, 'test_empty_test', children=[
-							ErrorNode( 3, "					@}" )
+							ErrorNode( 3, "\t\t\t\t\t@}" )
 							] )
 						] )
 					)
@@ -111,7 +111,7 @@ class ParserTest( unittest.TestCase ):
 					False,
 					RootNode( children=[
 						CodeNode( 1 ),
-						ErrorNode( 2, "					@TEST {" )
+						ErrorNode( 2, "\t\t\t\t\t@TEST {" )
 						] )
 					)
 				)
@@ -126,7 +126,7 @@ class ParserTest( unittest.TestCase ):
 					False,
 					RootNode( children=[
 						CodeNode( 1 ),
-						ErrorNode( 2, "					@}" )
+						ErrorNode( 2, "\t\t\t\t\t@}" )
 						] )
 					)
 				)
@@ -145,7 +145,7 @@ class ParserTest( unittest.TestCase ):
 						CodeNode( 1 ),
 						TestNode( 2, "empty", children=[
 							CodeNode( 3 ),
-							ErrorNode( 4, "					@}" )
+							ErrorNode( 4, "\t\t\t\t\t@}" )
 							] )
 						] )
 					)
@@ -163,7 +163,7 @@ class ParserTest( unittest.TestCase ):
 					False,
 					RootNode( children=[
 						CodeNode( 1 ),
-						ErrorNode( 2, "					@EXPECT {" )
+						ErrorNode( 2, "\t\t\t\t\t@EXPECT {" )
 						] )
 					)
 				)
@@ -180,7 +180,7 @@ class ParserTest( unittest.TestCase ):
 					False,
 					RootNode( children=[
 						CodeNode( 1 ),
-						ErrorNode( 2, "					@EXPECT_NOT {" )
+						ErrorNode( 2, "\t\t\t\t\t@EXPECT_NOT {" )
 						] )
 					)
 				)
@@ -197,7 +197,7 @@ class ParserTest( unittest.TestCase ):
 					False,
 					RootNode( children=[
 						CodeNode( 1 ),
-						ErrorNode( 2, "					@ASSERT {" )
+						ErrorNode( 2, "\t\t\t\t\t@ASSERT {" )
 						] )
 					)
 				)
@@ -214,7 +214,7 @@ class ParserTest( unittest.TestCase ):
 					False,
 					RootNode( children=[
 						CodeNode( 1 ),
-						ErrorNode( 2, "					@ASSERT_NOT {" )
+						ErrorNode( 2, "\t\t\t\t\t@ASSERT_NOT {" )
 						] )
 					)
 				)
@@ -236,7 +236,7 @@ class ParserTest( unittest.TestCase ):
 						CodeNode( 1 ),
 						TestNode( 2, "outer", children=[
 							CodeNode( 3 ),
-							ErrorNode( 4, "						@TEST inner {" )
+							ErrorNode( 4, "\t\t\t\t\t\t@TEST inner {" )
 							] )
 						] )
 					)
@@ -277,9 +277,10 @@ class ParserTest( unittest.TestCase ):
 										node_class_i( 3, children=[
 											CodeNode( 4 ),
 											ErrorNode(
-													5,
-													"										@{} {{".format( keyword_j )
-													)
+												5,
+												"\t\t\t\t\t\t\t\t\t\t@{} {{".
+													format( keyword_j )
+												)
 											] )
 										] )
 									] )
