@@ -18,6 +18,9 @@ class Node(object):
 		for child in children:
 			child.parent = self
 
+	def __lt__( self, other ):
+		return self._line_no < other._line_no
+
 	@classmethod
 	def make_parse_regex( cls, sub_regex ):
 		return re.compile( '^\s*@\s*{}\s*$'.format(sub_regex) )

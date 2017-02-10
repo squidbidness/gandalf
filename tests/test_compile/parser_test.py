@@ -342,4 +342,3 @@ class ParserTest( unittest.TestCase ):
 
 
 	# TODO: test_unconventional_whitespace_in_test_decl
-
