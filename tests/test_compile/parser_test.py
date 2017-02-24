@@ -1,10 +1,10 @@
-from parser import *
+from ast import *
+import parser
 import unittest
 
 def runParserTest( parser_test, input_str, expected ):
 	input_file = cStringIO.StringIO( input_str )
-	parser = Parser( input_file )
-	succeeded, result = parser.run()
+	succeeded, result = parser.parse_test_input( input_file )
 	input_file.close()
 	parser_test.assertEqual(
 			expected,

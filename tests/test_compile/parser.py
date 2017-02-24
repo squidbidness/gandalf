@@ -67,7 +67,7 @@ class _InvalidTransErrors:
 		}
 
 
-class Parser(object):
+class _Parser(object):
 
 	def __init__( self, infile ):
 		self._infile_init_pos = infile.tell()
@@ -149,7 +149,7 @@ _line_no = {}
 			return
 
 		self._line_no = self._line_no + 1
-		line = Parser._trim_newline_or_check_eof( self._infile.readline() )
+		line = _Parser._trim_newline_or_check_eof( self._infile.readline() )
 		transitions = _StateTrans.m[self._state]
 
 		for node_class, next_state, action in transitions:
@@ -182,4 +182,8 @@ _line_no = {}
 		result = (succeeded, self._ast_root)
 		self._reset()
 		return result
+
+
+def parse_test_input( infile ):
+	return _Parser( infile ).run()
 
