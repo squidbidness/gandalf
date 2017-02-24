@@ -1,6 +1,5 @@
 from __future__ import print_function
 
-import cStringIO
 import sys
 from ast import *
 
@@ -80,31 +79,6 @@ class _Parser(object):
 		self._node = self._ast_root
 		self._line_no = 0
 		self._infile.seek( self._infile_init_pos )
-
-	def __str__( self ):
-		return (
-"""
-_infile_init_pos = {}
-_infile.getvalue() = (
-{}
-)
-_state = {}
-_ast_root.tree_string() = (
-{}
-)
-_node.tree_string() = (
-{}
-)
-_line_no = {}
-
-""".format(
-		self._infile_init_pos,
-		self._infile.getvalue(),
-		self._state,
-		self._ast_root.tree_string(),
-		self._node.tree_string(),
-		self._line_no
-		) )
 
 	@classmethod
 	def _trim_newline_or_check_eof( cls, line ):
