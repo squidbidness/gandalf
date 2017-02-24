@@ -292,6 +292,7 @@ class ParserTest( unittest.TestCase ):
 
 	def test_multiple_consec_code_lines( self ):
 		runParserTest(
+				self,
 				"""code1
 					code2
 					code3

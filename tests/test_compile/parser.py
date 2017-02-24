@@ -213,31 +213,26 @@ class _State:
 	TestAfterAssertion = 11
 	Assertion = 12
 
-class _AstOp:
-	Push = 0
-	Pop = 1
-	Append = 2
-
 class _StateTrans:
 	m = {
 		_State.Start : [
-			(EofNode, _State.Accept, _AstOp.Append),
-			(TestNode, _State.TestBeforeAssertion, _AstOp.Push),
-			(CodeNode, _State.Start, _AstOp.Append)
+			(EofNode, _State.Accept, "append"),
+			(TestNode, _State.TestBeforeAssertion, "push"),
+			(CodeNode, _State.Start, "append")
 			],
 
 		_State.TestBeforeAssertion : [
-			(AssertionNode, _State.Assertion, _AstOp.Push),
-			(CodeNode, _State.TestBeforeAssertion, _AstOp.Append)
+			(AssertionNode, _State.Assertion, "push"),
+			(CodeNode, _State.TestBeforeAssertion, "append")
 			],
 		_State.Assertion : [
-			(EndNode, _State.TestAfterAssertion, _AstOp.Pop),
-			(CodeNode, _State.Assertion, _AstOp.Append)
+			(EndNode, _State.TestAfterAssertion, "pop"),
+			(CodeNode, _State.Assertion, "append")
 			],
 		_State.TestAfterAssertion : [
-			(EndNode, _State.Start, _AstOp.Pop),
-			(AssertionNode, _State.Assertion, _AstOp.Push),
-			(CodeNode, _State.TestAfterAssertion, _AstOp.Append)
+			(EndNode, _State.Start, "pop"),
+			(AssertionNode, _State.Assertion, "push"),
+			(CodeNode, _State.TestAfterAssertion, "append")
 			]
 		}
 
@@ -325,6 +320,21 @@ _line_no = {}
 
 		return ErrorNode( self._line_no, line, parent=self._node, message=err_msg )
 
+	def _run_ast_op( self, op_name, parsed_node ):
+		op = getattr( self, "_ast_op_{}".format( op_name ) )
+		op( parsed_node )
+
+	def _ast_op_append( self, node ):
+		self._node.children.append( node )
+
+	def _ast_op_pop( self, node ):
+		self._ast_op_append( node )
+		self._node = self._node.parent
+
+	def _ast_op_push( self, node ):
+		self._ast_op_append( node )
+		self._node = node
+
 	def _step( self ):
 
 		if self._state in [_State.Accept, _State.Reject]:
@@ -338,16 +348,7 @@ _line_no = {}
 			result = node_class.parse( self._node, self._line_no, line )
 
 			if result is not None:
-				self._node.children.append( result )
-				if action == _AstOp.Push:
-					self._node = result
-				elif action == _AstOp.Pop:
-					self._node = self._node.parent
-				elif action == _AstOp.Append:
-					pass
-				else:
-					raise NotImplementedError
-
+				self._run_ast_op( action, result )
 				self._state = next_state
 				return
 
