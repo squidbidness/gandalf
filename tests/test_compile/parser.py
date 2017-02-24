@@ -218,21 +218,21 @@ class _StateTrans:
 		_State.Start : [
 			(EofNode, _State.Accept, "append"),
 			(TestNode, _State.TestBeforeAssertion, "push"),
-			(CodeNode, _State.Start, "append")
+			(CodeNode, _State.Start, "append_code")
 			],
 
 		_State.TestBeforeAssertion : [
 			(AssertionNode, _State.Assertion, "push"),
-			(CodeNode, _State.TestBeforeAssertion, "append")
+			(CodeNode, _State.TestBeforeAssertion, "append_code")
 			],
 		_State.Assertion : [
 			(EndNode, _State.TestAfterAssertion, "pop"),
-			(CodeNode, _State.Assertion, "append")
+			(CodeNode, _State.Assertion, "append_code")
 			],
 		_State.TestAfterAssertion : [
 			(EndNode, _State.Start, "pop"),
 			(AssertionNode, _State.Assertion, "push"),
-			(CodeNode, _State.TestAfterAssertion, "append")
+			(CodeNode, _State.TestAfterAssertion, "append_code")
 			]
 		}
 
@@ -320,20 +320,27 @@ _line_no = {}
 
 		return ErrorNode( self._line_no, line, parent=self._node, message=err_msg )
 
-	def _run_ast_op( self, op_name, parsed_node ):
+	def _run_ast_op( self, op_name, new_node ):
 		op = getattr( self, "_ast_op_{}".format( op_name ) )
-		op( parsed_node )
+		op( new_node )
 
-	def _ast_op_append( self, node ):
-		self._node.children.append( node )
+	def _ast_op_append( self, new_node ):
+		self._node.children.append( new_node )
 
-	def _ast_op_pop( self, node ):
-		self._ast_op_append( node )
+	def _ast_op_pop( self, new_node ):
+		self._ast_op_append( new_node )
 		self._node = self._node.parent
 
-	def _ast_op_push( self, node ):
-		self._ast_op_append( node )
-		self._node = node
+	def _ast_op_push( self, new_node ):
+		self._ast_op_append( new_node )
+		self._node = new_node
+
+	def _ast_op_append_code( self, new_node ):
+		children = self._node.children
+		if children and isinstance( children[-1], CodeNode ):
+			children[-1].end_line = new_node.end_line
+		else:
+			children.append( new_node )
 
 	def _step( self ):
 

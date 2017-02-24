@@ -336,7 +336,7 @@ class ParserTest( unittest.TestCase ):
 							EndNode( 20 ),
 							] ),
 						CodeNode( 21, end_line=25 ),
-						EndNode( 25 )
+						EofNode( 25 )
 						] )
 					)
 				)
