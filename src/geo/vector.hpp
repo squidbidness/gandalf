@@ -9,12 +9,12 @@
 #include <array>
 #include <initializer_list>
 
-namespace geo::hidden_Vector {
+namespace geo::vector_implementation {
 	using namespace boost::hana::literals;
 	namespace hana = boost::hana;
 }
 
-namespace geo::hidden_Vector::exposed {
+namespace geo::vector_implementation::interface {
 
 	template< typename T, size_t N >
 	struct Vector : std::array<T, N> {
@@ -76,12 +76,12 @@ namespace geo::hidden_Vector::exposed {
 
 namespace std {
 	template< typename T, size_t N >
-	struct tuple_size< geo::hidden_Vector::exposed::Vector<T, N> >
+	struct tuple_size< geo::vector_implementation::interface::Vector<T, N> >
 			: tuple_size< array<T, N> >
 	{ };
 }
 
-namespace geo::hidden_Vector::exposed {
+namespace geo::vector_implementation::interface {
 
 
 	template< typename Vec >
@@ -223,7 +223,7 @@ namespace geo::hidden_Vector::exposed {
 }
 
 namespace geo {
-	using namespace hidden_Vector::exposed;
+	using namespace vector_implementation::interface;
 }
 
 #endif
