@@ -43,7 +43,8 @@ namespace geo::vector_implementation::interface {
 			return (*this)[0_c];
 		}
 		constexpr T const &x() const {
-			return x();
+			static_assert( N > 0 );
+			return (*this)[0_c];
 		}
 
 		constexpr T &y() {
@@ -51,7 +52,8 @@ namespace geo::vector_implementation::interface {
 			return (*this)[1_c];
 		}
 		constexpr T const &y() const {
-			return y();
+			static_assert( N > 1 );
+			return (*this)[1_c];
 		}
 
 		constexpr T &z() {
@@ -59,7 +61,8 @@ namespace geo::vector_implementation::interface {
 			return (*this)[2_c];
 		}
 		constexpr T const &z() const {
-			return z();
+			static_assert( N > 2 );
+			return (*this)[2_c];
 		}
 
 		constexpr T &w() {
@@ -67,7 +70,8 @@ namespace geo::vector_implementation::interface {
 			return (*this)[3_c];
 		}
 		constexpr T const &w() const {
-			return w();
+			static_assert( N > 3 );
+			return (*this)[3_c];
 		}
 
 	};
