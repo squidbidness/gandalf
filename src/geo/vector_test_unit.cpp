@@ -85,4 +85,12 @@ namespace geo {
 				);
 	}
 
+	TEST( Vector, cross_canonical_bases ) {
+		EXPECT_EQ( V_(0, 0, 1), cross(V_(1, 0, 0), V_(0, 1, 0)) );
+		EXPECT_EQ( V_(0, -1, 0), cross(V_(1, 0, 0), V_(0, 0, 1)) );
+		EXPECT_EQ( V_(1, 0, 0), cross(V_(0, 1, 0), V_(0, 0, 1)) );
+		EXPECT_EQ( V_(0, 0, -1), cross(V_(0, 1, 0), V_(1, 0, 0)) );
+		EXPECT_EQ( V_(0, 1, 0), cross(V_(0, 0, 1), V_(1, 0, 0)) );
+		EXPECT_EQ( V_(-1, 0, 0), cross(V_(0, 0, 1), V_(0, 1, 0)) );
+	}
 }

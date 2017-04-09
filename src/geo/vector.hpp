@@ -149,6 +149,12 @@ namespace geo::vector_implementation::interface {
 				std::forward<T>( t )... };
 	}
 
+	namespace Vector_shorthand {
+		constexpr auto V_( auto &&...t ) {
+			return makeVector( std::forward<decltype(t)>( t )... );
+		};
+	}
+
 
 	template< typename ComponentOp, typename ...Vecs, int ...Is >
 	// requires ComponentOpConsistentResult_CV<ComponentOp, Vecs..., Is...>
@@ -197,6 +203,15 @@ namespace geo::vector_implementation::interface {
 	}
 
 
+	template< typename T, typename S >
+	constexpr auto cross( Vector<T, 3> const &a, Vector<S, 3> const &b ) {
+		using namespace Vector_shorthand;
+		return V_( a.y() * b.z() - a.z() * b.y(),
+				a.z() * b.x() - a.x() * b.z(),
+				a.x() * b.y() - a.y() * b.x() );
+	}
+
+
 	template< size_t N > using VectorF = Vector<float, N>;
 	template< size_t N > using VectorD = Vector<double, N>;
 
@@ -215,11 +230,6 @@ namespace geo::vector_implementation::interface {
 	using VectorD3 = VectorD<3>;
 	using VectorD4 = VectorD<4>;
 
-	namespace Vector_shorthand {
-		constexpr auto V_( auto &&...t ) {
-			return makeVector( std::forward<decltype(t)>( t )... );
-		};
-	}
 }
 
 namespace geo {
