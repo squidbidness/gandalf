@@ -1,0 +1,130 @@
+Use tabs for indentation, and spaces for alignment.
+
+	In this way, tabs carry the meaning of scope, and spaces carry no
+	special meaning aside from setting layout as desired, after indentation
+	level is established by tabs.
+
+	Consequently, there should be no tabs in a line after the first
+	non-whitespace in a line
+
+Limit lines in code files to 120 characters.  This is a hard limit and
+absolute requirement.
+
+	If a single line of code is longer than 120 characters, break the line
+	textually across more than one textual line, and indent each following
+	textual line by two indents.
+
+Limit plain text document lines to 80 characters, subject to reasonable
+exceptions as context may dictate.
+
+Cuddle else or if else clauses to the same line as the closing brace of the
+previous clause, separated by a single space.
+
+Similarly, cuddle 'catch' blocks to the same line as the closing brace of a
+'try' block.
+
+If a function signature causes the code line of a function declaration or
+definition to exceed 120 characters, then break the line at the opening
+parenthesis of the signature, give each function parameter its own textual
+line with each parameter line indented twice relative to the line beginning
+the delcaration/definition.  Give the closing parenthesis
+its own line, along with any const/volatile/ref/override/=0/etc., and indent
+it the same as the line beginning the declaration/definition.  Cuddle the
+openeing brace of a function definition to the same line as the signature's
+closing parenthesis.
+
+	For example:
+		int multiLineDecl(   // Pretend line break is needed here
+				int p1,
+				int p2
+		) const override {
+			// implementation ...
+		}
+
+The above rule need not apply to function invocations: only to
+declarations or definitions.  If a line break is needed in the middle of a
+function invocation, the arguments may be flowed with many to a line
+(double-indenting as normal for the second and subsequent lines), or with
+one per line, as desired.
+
+	For example:
+		auto result = func( arg1, arg2, // Pretend line break is needed here
+
+In general, indent closing parentheses/brackets/braces to the same level of
+indentation as the line that began the scope they close.
+
+Indent switch case labels to the same level as the 'switch' statement:
+
+	For example:
+		switch foo {
+		case 1:
+			// do the 1 thing ...
+			break;
+		case 2:
+			// do the 2 thing ...
+			break;
+		default:
+			// do the default thing ...
+			break;
+		}
+
+Indent access level specifiers to the same level as the struct
+declaration/defintion opening:
+
+	For example:
+		struct Foo {
+			Foo();
+			Foo( Foo const &other );
+			bar getThing() const;
+		private:
+			bar m_thing;
+		};
+
+Prefix private class member variables with 'm_'
+
+Prefix private class instance functions with 'p_'
+
+Prefix private class static functions and variables with 's_'
+
+Always spell a class with the 'struct' keyword; never 'class', just for
+foolish, peevish consistency.
+
+Always use 'typename' instead of 'class' in template parameters.
+
+Avoid redundant 'public' modifier for public inheritance with a class
+declaration (since we always spell 'class' as 'struct')
+
+	For example:
+		template< typename T, ... >
+		struct FancyVector : std::vector<T, ...> {
+		};
+
+Spell class names WithInitialCapitalsWithoutUnderscores
+
+Spell function namesAndClassFunctionNamesInCamelCase
+
+	There may be occasional reasonable use of underscores in class names and
+	function names to separate truly distinct name portions other than mere
+	word separation
+
+Spell variable names in snake_case
+
+Spell static global constant objects in ALL_CAPS_SNAKE_CASE.  Local incidental
+variables may be reasonable as snake_case.
+
+Avoid #defines for constants.  Use 'static T const FOO_CONSTANT' or even better,
+'static constexpr T FOO_CONSTANT' where possible.
+
+Always place 'const' or 'volatile' to the _right_ of the type name it modifies:
+
+	string const foo;
+
+Cuddle pointer '*' or reference '&'/'&&' type modifiers up to the identifier
+name, not to the type or the 'const/volatile'.  Even do this with function
+return types.
+
+	For example:
+		string &foo;
+		string const &foo;
+		string const &&foo;
+		string const &T::getFoo();
