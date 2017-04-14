@@ -1,38 +1,17 @@
-Use tabs for indentation, and spaces for alignment.
+Pay attention to use constexpr where possible and reasonable
 
-	In this way, tabs carry the meaning of scope, and spaces carry no
-	special meaning aside from setting layout as desired, after indentation
-	level is established by tabs.
+#define macros are NOT forbidden for boiler-plate avoidance and
+code-generation purposes: these are regarded as legitimate coding paradigms
+which unfortunately C and C++ do not support all that well outside the
+pre-processor.  Consider if something is possible with
+template metaprogramming, the Curiously Recurring Template Pattern, or other
+type-safe and hygenic techniques.  But we don't have to resort to truly
+insane template-foo if something is more reasonable as a macro.
 
-	Consequently, there should be no tabs in a line after the first
-	non-whitespace in a line
+Avoid non-const lvalue references as function output parameters; use non-const
+raw pointers instead, since the '&' addres-of operator at call sites is a
+handy clue that the argument may be modified by the function call.
 
-Limit lines to 80 characters
-
-	If a single line of code is longer than 80 characters, break the line
-	textually across more than one textual line, and indent each following
-	textual line by two indents.
-
-Cuddle else or if else clauses to the same line as the closing brace of the
-previous clause, separated by a single space
-
-If a function signature causes the code line of a function declaration or
-definition to exceed 80 characters, then break the line at the opening
-parenthesis of the signature, give each function parameter its own textual
-line with each parameter line indented twice relative to the line beginning
-the delcaration/definition.  Give the closing parenthesis
-its own line, along with any const/volatile/ref/override/=0/etc., and indent
-it the same as the line beginning the declaration/definition.  Cuddle the
-openeing brace of a function definition to the same line as the signature's
-closing parenthesis.
-
-	For example:
-		int multiLineDecl(
-					int p1,
-					int p2
-		) const override {
-			// implementation ...
-		}
-
-In general, indent closing parentheses/brackets/braces to the same level of
-indentation as the line that began the scope they close.
+However, try to avoid output parameters; in most cases favor declaring a
+struct and returning it from a function when multiple return values are
+wanted.
