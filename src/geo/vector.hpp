@@ -9,15 +9,17 @@
 #include <array>
 #include <initializer_list>
 
+
 namespace geo::vector_implementation {
+
 	using namespace boost::hana::literals;
 	namespace hana = boost::hana;
-}
 
-namespace geo::vector_implementation::interface {
+	template< typename T, size_t N, size_t I >
+	struct VectorBase;
 
 	template< typename T, size_t N >
-	struct Vector : std::array<T, N> {
+	struct VectorBase< T, N, 0 > : std::array<T, N> {
 
 		using Base = std::array<T, N>;
 
@@ -37,56 +39,52 @@ namespace geo::vector_implementation::interface {
 		{
 			return std::get<I>( *this );
 		}
-
-		constexpr T &x() {
-			static_assert( N > 0 );
-			return (*this)[0_c];
-		}
-		constexpr T const &x() const {
-			static_assert( N > 0 );
-			return (*this)[0_c];
-		}
-
-		constexpr T &y() {
-			static_assert( N > 1 );
-			return (*this)[1_c];
-		}
-		constexpr T const &y() const {
-			static_assert( N > 1 );
-			return (*this)[1_c];
-		}
-
-		constexpr T &z() {
-			static_assert( N > 2 );
-			return (*this)[2_c];
-		}
-		constexpr T const &z() const {
-			static_assert( N > 2 );
-			return (*this)[2_c];
-		}
-
-		constexpr T &w() {
-			static_assert( N > 3 );
-			return (*this)[3_c];
-		}
-		constexpr T const &w() const {
-			static_assert( N > 3 );
-			return (*this)[3_c];
-		}
-
 	};
+
+	template< typename T, size_t N>
+	struct VectorBase< T, N, 1 > : VectorBase<T, N, 0> {
+		T &x() { return (*this)[0_c]; }
+		T const &x() const { return (*this)[0_c]; }
+	};
+
+	template< typename T, size_t N >
+	struct VectorBase< T, N, 2 > : VectorBase<T, N, 1> {
+		T &y() { return (*this)[1_c]; }
+		T const &y() const { return (*this)[1_c]; }
+	};
+
+	template< typename T, size_t N >
+	struct VectorBase< T, N, 3 > : VectorBase<T, N, 2> {
+		T &z() { return (*this)[2_c]; }
+		T const &z() const { return (*this)[2_c]; }
+	};
+
+	template< typename T, size_t N >
+	struct VectorBase< T, N, 4 > : VectorBase<T, N, 3> {
+		T &w() { return (*this)[3_c]; }
+		T const &w() const { return (*this)[3_c]; }
+	};
+
+	template< typename T, size_t N, size_t I >
+	struct VectorBase : VectorBase<T, N, I-1>
+	{ };
+
+
+	template< typename T, size_t N >
+	using Vector = VectorBase<T, N, N>;
 
 }
 
 namespace std {
 	template< typename T, size_t N >
-	struct tuple_size< geo::vector_implementation::interface::Vector<T, N> >
+	struct tuple_size< geo::vector_implementation::Vector<T, N> >
 			: tuple_size< array<T, N> >
 	{ };
 }
 
 namespace geo::vector_implementation::interface {
 
+	using geo::vector_implementation::Vector;
 
 	template< typename Vec >
 	concept bool Vector_CV
