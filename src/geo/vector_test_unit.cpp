@@ -14,20 +14,20 @@ namespace geo {
 		auto v = V_( std::forward<S>( s )... );
 
 		if constexpr ( v.size() > 0 ) {
-			EXPECT_EQ( v[0], v.x() )
-					<< "LINE:" << line << " v[0] = " << v[0] << ", v.x()=" << v.x();
+			EXPECT_EQ( v[0], v.x )
+					<< "LINE:" << line << " v[0] = " << v[0] << ", v.x=" << v.x;
 		}
 		if constexpr ( v.size() > 1 ) {
-			EXPECT_EQ( v[1], v.y() )
-					<< "LINE:" << line << " v[1] = " << v[1] << ", v.y()=" << v.y();
+			EXPECT_EQ( v[1], v.y )
+					<< "LINE:" << line << " v[1] = " << v[1] << ", v.y=" << v.y;
 		}
 		if constexpr ( v.size() > 2 ) {
-			EXPECT_EQ( v[2], v.z() )
-					<< "LINE:" << line << " v[2] = " << v[2] << ", v.z()=" << v.z();
+			EXPECT_EQ( v[2], v.z )
+					<< "LINE:" << line << " v[2] = " << v[2] << ", v.z=" << v.z;
 		}
 		if constexpr ( v.size() > 3 ) {
-			EXPECT_EQ( v[3], v.w() )
-					<< "LINE:" << line << " v[3] = " << v[3] << ", v.w()=" << v.w();
+			EXPECT_EQ( v[3], v.w )
+					<< "LINE:" << line << " v[3] = " << v[3] << ", v.w=" << v.w;
 		}
 	}
 

@@ -43,26 +43,22 @@ namespace geo::vector_implementation {
 
 	template< typename T, size_t N>
 	struct VectorBase< T, N, 1 > : VectorBase<T, N, 0> {
-		T &x() { return (*this)[0_c]; }
-		T const &x() const { return (*this)[0_c]; }
+		T &x = (*this)[0_c];
 	};
 
 	template< typename T, size_t N >
 	struct VectorBase< T, N, 2 > : VectorBase<T, N, 1> {
-		T &y() { return (*this)[1_c]; }
-		T const &y() const { return (*this)[1_c]; }
+		T &y = (*this)[1_c];
 	};
 
 	template< typename T, size_t N >
 	struct VectorBase< T, N, 3 > : VectorBase<T, N, 2> {
-		T &z() { return (*this)[2_c]; }
-		T const &z() const { return (*this)[2_c]; }
+		T &z = (*this)[2_c];
 	};
 
 	template< typename T, size_t N >
 	struct VectorBase< T, N, 4 > : VectorBase<T, N, 3> {
-		T &w() { return (*this)[3_c]; }
-		T const &w() const { return (*this)[3_c]; }
+		T &w = (*this)[3_c];
 	};
 
 	template< typename T, size_t N, size_t I >
@@ -208,9 +204,9 @@ namespace geo::vector_implementation::interface {
 	template< typename T, typename S >
 	constexpr auto cross( Vector<T, 3> const &a, Vector<S, 3> const &b ) {
 		using namespace Vector_shorthand;
-		return V_( a.y() * b.z() - a.z() * b.y(),
-				a.z() * b.x() - a.x() * b.z(),
-				a.x() * b.y() - a.y() * b.x() );
+		return V_( a.y * b.z - a.z * b.y,
+				a.z * b.x - a.x * b.z,
+				a.x * b.y - a.y * b.x );
 	}
 
 
