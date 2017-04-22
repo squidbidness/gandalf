@@ -152,7 +152,7 @@ namespace geo::vector_implementation::interface {
 	}
 
 	namespace Vector_shorthand {
-		constexpr auto V_( auto &&...t ) {
+		constexpr auto V( auto &&...t ) {
 			return makeVector( std::forward<decltype(t)>( t )... );
 		};
 	}
@@ -208,7 +208,7 @@ namespace geo::vector_implementation::interface {
 	template< typename T, typename S >
 	constexpr auto cross( Vector<T, 3> const &a, Vector<S, 3> const &b ) {
 		using namespace Vector_shorthand;
-		return V_( a.y() * b.z() - a.z() * b.y(),
+		return V( a.y() * b.z() - a.z() * b.y(),
 				a.z() * b.x() - a.x() * b.z(),
 				a.x() * b.y() - a.y() * b.x() );
 	}
