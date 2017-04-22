@@ -1,0 +1,2 @@
+#!/bin/sh
+/usr/local/Cellar/gcc/HEAD-_1/bin/g++-7 -fconcepts $1 -o $2 -isystem../external/ -isystem/usr/local/Cellar/boost1.61/1.61.0_1/include/ --std=c++1z
