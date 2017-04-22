@@ -9,6 +9,18 @@ namespace geo {
 	using namespace Vector_shorthand;
 	using namespace std;
 
+	TEST( Vector, shorthand_constructor ) {
+		auto v1 = V_( 10.0f, 11.0f, 12.0f );
+		VectorF3 vcons1{ 10.0f, 11.0f, 12.0f };
+		EXPECT_EQ( 3, v1.size() );
+		EXPECT_EQ( vcons1, v1 );
+
+		auto v2 = V_( 10ul );
+		Vector< unsigned long, 1 > vcons2{ 10ul };
+		EXPECT_EQ( 1, v2.size() );
+		EXPECT_EQ( vcons2, v2 );
+	}
+
 	template< typename ...S >
 	auto testComponents( size_t line, S &&...s ) -> void {
 		auto v = V_( std::forward<S>( s )... );
